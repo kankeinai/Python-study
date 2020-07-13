@@ -4,7 +4,7 @@ import os
 
 # python3 pdf.py watermark.pdf directory/
 
-# sys.argv[1] - watermark it should be .pdf
+# sys.argv[1] - watermark, it should be .pdf
 # sys.argv[2] - directory where there are .pdf files
 
 # if one .pdf file, watermark added
