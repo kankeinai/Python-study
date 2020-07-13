@@ -1,6 +1,8 @@
 from translate import Translator
+
+
 print("Welcome to offline translator!")
-while 1:
+while True:
     print("Before choosing the language, make sure that you have found the right lang code (see https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes)")
     lang = input("\nInput lang code: ")
     translation = Translator(to_lang=lang)
