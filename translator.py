@@ -13,7 +13,7 @@ while True:
         print("\nTranslation:")
         print(translation.translate(text))
     elif respond == '2':
-        while 1:
+        while True:
             file_name = input("Please write the name of your file: ")
             try:
                 with open(file_name) as input_file:
