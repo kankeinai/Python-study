@@ -13,13 +13,13 @@ try:
                 base[lines.split(" ")[0]] = lines.split(" ")[1]
 except FileNotFoundError:
     file = open("registration.txt", 'w').close()
-while 1:
+while True:
     print("WELCOME to Registartion")
-    while 1:
+    while True:
         mail = input("Please enter your mail in the right format: ")
         if re.search(pattern_email, mail):
             if mail not in base:
-                while 1:
+                while True:
                     password = input("Enter password: ")
                     if re.search(pattern_password, password):
                         base[mail] = password
@@ -32,7 +32,7 @@ while 1:
             else:
                 tries = 5
                 print("The entered email is already registered. \nYou can login instead")
-                while 1:
+                while True:
                     if tries != 0:
                         password = input("Enter password: ")
                         if base[mail] == password:
