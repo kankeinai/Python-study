@@ -1,7 +1,8 @@
 import sys
 import os
 from PIL import Image, ImageFilter
-
+from translate import Translator
+translation = Translator(to_lang='ja')
 # python3 pokemons/ new/
 
 my_dir = sys.argv[1]
@@ -15,6 +16,6 @@ for pictures in os.listdir(my_dir):
         img = img.convert("L")
         img.thumbnail((100, 100))
         filename = os.path.splitext(pictures)[0]
-        img.save(new_folder + filename + ".png", 'png')
+        img.save(new_folder + translation.translate(filename) + ".png", 'png')
         print(f"{pictures} is done, {img.size}")
 print("bye.")
