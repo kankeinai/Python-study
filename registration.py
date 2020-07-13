@@ -1,9 +1,18 @@
 import re
+import os
+
 base = {}
 pattern_email = re.compile(
     r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 pattern_password = re.compile(
-    "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[_\-])[A-Za-z\d_\-]{6,20}$")
+    "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d_\-]{6,20}$")
+try:
+    with open("registration.txt", 'r+') as reg:
+        if(os.stat("registration.txt").st_size):
+            for lines in reg:
+                base[lines.split(" ")[0]] = lines.split(" ")[1]
+except FileNotFoundError:
+    file = open("registration.txt", 'w').close()
 while 1:
     print("WELCOME to Registartion")
     mail = input("Please enter your mail in the right format: ")
@@ -13,6 +22,8 @@ while 1:
                 password = input("Enter password: ")
                 if re.search(pattern_password, password):
                     base[mail] = password
+                    with open("registration.txt", 'a+') as reg:
+                        reg.writelines(f"{mail} {password} \n")
                     print("You have succefully registered")
                     break
                 else:
@@ -26,6 +37,7 @@ while 1:
                     if base[mail] == password:
                         print("You have succesefully logined")
                         tries = 5
+                        break
                     else:
                         tries -= 1
                         if tries == 1:
