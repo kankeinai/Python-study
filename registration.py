@@ -15,41 +15,46 @@ except FileNotFoundError:
     file = open("registration.txt", 'w').close()
 while 1:
     print("WELCOME to Registartion")
-    mail = input("Please enter your mail in the right format: ")
-    if re.search(pattern_email, mail):
-        if mail not in base:
-            while 1:
-                password = input("Enter password: ")
-                if re.search(pattern_password, password):
-                    base[mail] = password
-                    with open("registration.txt", 'a+') as reg:
-                        reg.writelines(f"{mail} {password} \n")
-                    print("You have succefully registered")
-                    break
-                else:
-                    print("Password is in the wrong format")
-        else:
-            tries = 5
-            print("The entered email is already registered. \nYou can login instead")
-            while 1:
-                if tries != 0:
+    while 1:
+        mail = input("Please enter your mail in the right format: ")
+        if re.search(pattern_email, mail):
+            if mail not in base:
+                while 1:
                     password = input("Enter password: ")
-                    if base[mail] == password:
-                        print("You have succesefully logined")
-                        tries = 5
+                    if re.search(pattern_password, password):
+                        base[mail] = password
+                        with open("registration.txt", 'a+') as reg:
+                            reg.writelines(f"{mail} {password} \n")
+                        print("You have succefully registered")
                         break
                     else:
-                        tries -= 1
-                        if tries == 1:
-                            print(
-                                "Wrong password. You still have {} try".format(tries))
+                        print("Password is in the wrong format")
+            else:
+                tries = 5
+                print("The entered email is already registered. \nYou can login instead")
+                while 1:
+                    if tries != 0:
+                        password = input("Enter password: ")
+                        if base[mail] == password:
+                            print("You have succesefully logined")
+                            tries = 5
+                            break
                         else:
-                            print(
-                                "Wrong password. You still have {} tries".format(tries))
-                else:
-                    print("The access is prohibited")
-                    break
+                            tries -= 1
+                            if tries == 1:
+                                print(
+                                    "Wrong password. You still have {} try".format(tries))
+                            else:
+                                print(
+                                    "Wrong password. You still have {} tries".format(tries))
+                    else:
+                        print("The access is prohibited")
+                        break
+            break
+        else:
+            print("The mail is not in the right format")
     respond = input("Would u like to register one more account. 0 to exit: ")
     if respond == '0':
         break
+print(base)
 print("Bye.")
