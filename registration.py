@@ -43,10 +43,10 @@ while 1:
                             tries -= 1
                             if tries == 1:
                                 print(
-                                    "Wrong password. You still have {} try".format(tries))
+                                    f"Wrong password. You still have {tries} try")
                             else:
                                 print(
-                                    "Wrong password. You still have {} tries".format(tries))
+                                    f"Wrong password. You still have {tries} tries")
                     else:
                         print("The access is prohibited")
                         break
