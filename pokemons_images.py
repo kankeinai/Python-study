@@ -1,6 +1,9 @@
 import sys
 import os
 from PIL import Image, ImageFilter
+
+# python3 pokemons/ new/
+
 my_dir = sys.argv[1]
 new_folder = sys.argv[2]
 if not os.path.exists(new_folder):
