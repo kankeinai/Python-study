@@ -2,6 +2,8 @@ import sys
 import os
 from PIL import Image, ImageFilter
 from translate import Translator
+
+
 translation = Translator(to_lang='ja')
 # python3 pokemons/ new/
 
