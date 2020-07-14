@@ -22,15 +22,23 @@ while 1:
         if re.search(pattern_email, mail):
             if mail not in base:
                 while 1:
-                    password = input("Enter password: ")
-                    if re.search(pattern_password, password):
-                        base[mail] = password
-                        with open("registration.txt", 'a+') as reg:
-                            reg.writelines(f"{mail} {password} \n")
-                        print("You have succefully registered")
-                        break
+                    code = random_code.garbage()
+                    email_sender.confirm(mail, code)
+                    answer = input(
+                        "The code was sent to your mail to confirm it, paste it here: ")
+                    if answer == code:
+                        password = input("Enter password: ")
+                        if re.search(pattern_password, password):
+                            base[mail] = password
+                            with open("registration.txt", 'a+') as reg:
+                                reg.writelines(f"{mail} {password} \n")
+                            print("You have succefully registered")
+                            break
+                        else:
+                            print("Password is in the wrong format")
                     else:
-                        print("Password is in the wrong format")
+                        print("Wrong code. The email was not confirmed.")
+                        break
             else:
                 tries = 5
                 print("The entered email is already registered. \nYou can login instead")
@@ -54,7 +62,7 @@ while 1:
                             "Would u like to restore your password? 1 for yes: ")
                         if respond == '1':
                             code = random_code.garbage()
-                            email_sender.send_mail(mail, code)
+                            email_sender.restore(mail, code)
                             answer = input("Please paste code here: ")
                             if answer == code:
                                 print(
