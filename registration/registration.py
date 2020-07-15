@@ -2,6 +2,7 @@ import re
 import os
 import email_sender
 import random_code
+import password as checker
 
 base = {}
 pattern_email = re.compile(
@@ -15,27 +16,35 @@ try:
                 base[lines.split(" ")[0]] = lines.split(" ")[1]
 except FileNotFoundError:
     file = open("registration.txt", 'w').close()
-while 1:
+while True:
     print("WELCOME to Registartion")
-    while 1:
+    while True:
         mail = input("Please enter your mail in the right format: ")
         if re.search(pattern_email, mail):
             if mail not in base:
-                while 1:
+                while True:
                     code = random_code.garbage()
                     email_sender.confirm(mail, code)
                     answer = input(
                         "The code was sent to your mail to confirm it, paste it here: ")
                     if answer == code:
-                        password = input("Enter password: ")
-                        if re.search(pattern_password, password):
-                            base[mail] = password
-                            with open("registration.txt", 'a+') as reg:
-                                reg.writelines(f"{mail} {password} \n")
-                            print("You have succefully registered")
-                            break
-                        else:
-                            print("Password is in the wrong format")
+                        while True:
+                            password = input("Enter password: ")
+                            if re.search(pattern_password, password):
+                                count = checker.pwned_api_check(password)
+                                if count:
+                                    print(
+                                        f"This password was hacked {count} times. Choose a different one")
+                                else:
+                                    print("Your password is good")
+                                    base[mail] = password
+                                    with open("registration.txt", 'a+') as reg:
+                                        reg.writelines(f"{mail} {password} \n")
+                                    print("You have succefully registered")
+                                    break
+                            else:
+                                print("Password is in the wrong format")
+                        break
                     else:
                         print("Wrong code. The email was not confirmed.")
                         break
