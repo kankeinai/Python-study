@@ -53,7 +53,6 @@ def main(pages):
     stories = []
     stories = scan_pages(pages, stories)
     create_site(stories)
-    print(os.getcwd())
     webbrowser.open_new("file://"+os.getcwd()+"/index.html")
     return("Done.")
 
