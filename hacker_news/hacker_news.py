@@ -1,17 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
+import pprint
 import sys
 import os
 import webbrowser
-
-
-def print_stories_hn(hnlist):
-    i = 1
-    for items in hnlist:
-        print(
-            f"{i}. {items['title']}\nLink: {items['link']}\nVotes: {items['votes']}\n")
-        i += 1
-
 
 def sort_stories_by_votes(hnlist):
     return sorted(hnlist, key=lambda k: k['votes'], reverse=True)
@@ -29,7 +21,7 @@ def create_custom_hn(links, subtext, stories):
 
 
 def scan_pages(pages, stories):
-    for i in range(0,  pages):
+    for i in range(1,  pages+1):
         res = requests.get('https://news.ycombinator.com/news?p='+str(i))
         soup = BeautifulSoup(res.text, 'html.parser')
         links = soup.select('.storylink')
