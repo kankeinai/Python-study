@@ -2,6 +2,16 @@ import requests
 from bs4 import BeautifulSoup
 import pprint
 import sys
+import os
+import webbrowser
+
+
+def print_stories_hn(hnlist):
+    i = 1
+    for items in hnlist:
+        print(
+            f"{i}. {items['title']}\nLink: {items['link']}\nVotes: {items['votes']}\n")
+        i += 1
 
 
 def sort_stories_by_votes(hnlist):
@@ -20,7 +30,7 @@ def create_custom_hn(links, subtext, stories):
 
 
 def scan_pages(pages, stories):
-    for i in range(1,  pages):
+    for i in range(0,  pages):
         res = requests.get('https://news.ycombinator.com/news?p='+str(i))
         soup = BeautifulSoup(res.text, 'html.parser')
         links = soup.select('.storylink')
@@ -32,7 +42,10 @@ def scan_pages(pages, stories):
 def create_site(stories):
     with open('index.html', 'w') as site:
         site.write(
-            "<!DOCTYPE html>\n<head>\n<title>Hacker news</title>\n<link href=\"style.css\" rel=\"stylesheet\" type=\"text/css\">\n<link href=\"https://fonts.googleapis.com/css2?family=Varta&display=swap\" rel=\"stylesheet\"></head>\n<body>\n<h1>Hacker news</h1>\n<table>")
+            "<!DOCTYPE html>\n<head>\n<title>Hacker news</title>\n<link href=\"style.css\" rel=\"stylesheet\" type=\"text/css\">\n")
+        site.write(
+            "<link href=\"https://fonts.googleapis.com/css2?family=Varta&display=swap\" rel=\"stylesheet\"></head>\n")
+        site.write("<body>\n<h1>Hacker news</h1>\n<table>\n")
         site.write("<tr><th>#</th><th>Title</th><th>Votes</th></tr>")
         i = 1
         for items in stories:
@@ -50,6 +63,8 @@ def main(pages):
     stories = []
     stories = scan_pages(pages, stories)
     create_site(stories)
+    print(os.getcwd())
+    webbrowser.open_new("file://"+os.getcwd()+"/index.html")
     return("Done.")
 
 
