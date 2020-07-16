@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-import pprint
 import sys
 import os
 import webbrowser
