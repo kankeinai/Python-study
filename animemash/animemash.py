@@ -41,8 +41,10 @@ def choose_best_anime(anime_one, anime_two):
     sql = '''SELECT * FROM animemash WHERE anime_id =%s'''
     mycursor.execute(sql, (anime_two,))
     result_2 = mycursor.fetchall()
-    anime_image_one = save_image(result_1[0][1], result_1[0][3]).show()
-    anime_image_two = save_image(result_2[0][1], result_2[0][3]).show()
+    anime_image_one = save_image(result_1[0][1], result_1[0][3])
+    anime_image_two = save_image(result_2[0][1], result_2[0][3])
+    anime_image_one.show()
+    anime_image_two.show()
     response = input(
         f"Which anime is better:\n1. {result_1[0][1]}\n2. {result_2[0][1]}\nОтвет: ")
     # вызываем функцию save_image() если картинки нет в папке, она скачает
