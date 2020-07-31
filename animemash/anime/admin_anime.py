@@ -20,9 +20,18 @@ def create_base(mycursor):
 
 
 def create_table(mycursor):
-    sql = 'CREATE TABLE anime_users(user_id_anime INT, user_winner_list VARCHAR(250))'
-    mycursor.execute(sql)
-    mydb.commit()
+    try:
+        sql = 'CREATE TABLE animemash(anime_id INT AUTO_INCREMENT PRIMARY KEY, anime_name VARCHAR(250), anime_rate INT, anime_image VARCHAR(250))'
+        mycursor.execute(sql)
+        mydb.commit()
+    except:
+        print("Таблица animemesh существует")
+    try:
+        sql = 'CREATE TABLE animemash(anime_id INT AUTO_INCREMENT PRIMARY KEY, anime_name VARCHAR(250), anime_rate INT, anime_image VARCHAR(250))'
+        mycursor.execute(sql)
+        mydb.commit()
+    except:
+        print("Таблица  anime_users существует")
 
 
 def get_anime_info():
@@ -67,10 +76,11 @@ def print_base(mycursor):
 
 
 def main():
-    sql = "drop table anime_users"
-    mycursor.execute(sql)
-    mydb.commit()
+    create_base(mycursor)
     create_table(mycursor)
+    anime = get_anime_info()
+    fill_base_anime(anime, mycursor, mydb)
+    print_base(mycursor)
 
 
 if __name__ == '__main__':
