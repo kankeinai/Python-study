@@ -49,10 +49,10 @@ def get_new_rates(winner, result_1, result_2, result_1_rate, result_2_rate):
     exp_B = get_Expectation(result_2_rate, result_1_rate)
     if winner == result_1:
         new_rate_A = modifyRating(result_1_rate, exp_A, 1, 30)
-        new_rate_B = modifyRating(result_2_rate, exp_B, 0, 30)
+        new_rate_B = modifyRating(result_2_rate, exp_B, -1, 30)
     else:
         new_rate_B = modifyRating(result_2_rate, exp_B, 1, 30)
-        new_rate_A = modifyRating(result_1_rate, exp_A, 0, 30)
+        new_rate_A = modifyRating(result_1_rate, exp_A, -1, 30)
     return new_rate_A, new_rate_B
 
 # Обновляем данные бд
