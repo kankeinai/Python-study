@@ -1,5 +1,6 @@
 import pandas as pd
 import mysql.connector
+from img_dwl import get_link, save_image
 
 mydb = mysql.connector.connect(
     host="localhost",
@@ -21,17 +22,11 @@ def create_base(mycursor):
 
 def create_table(mycursor):
     try:
-        sql = 'CREATE TABLE animemash(anime_id INT AUTO_INCREMENT PRIMARY KEY, anime_name VARCHAR(250), anime_rate INT, anime_image VARCHAR(250))'
+        sql = 'CREATE TABLE animemash(anime_id INT AUTO_INCREMENT PRIMARY KEY, anime_name VARCHAR(250), anime_rate float, anime_image VARCHAR(250))'
         mycursor.execute(sql)
         mydb.commit()
     except:
         print("Таблица animemesh существует")
-    try:
-        sql = 'CREATE TABLE animemash(anime_id INT AUTO_INCREMENT PRIMARY KEY, anime_name VARCHAR(250), anime_rate INT, anime_image VARCHAR(250))'
-        mycursor.execute(sql)
-        mydb.commit()
-    except:
-        print("Таблица  anime_users существует")
 
 
 def get_anime_info():
@@ -76,10 +71,6 @@ def print_base(mycursor):
 
 
 def main():
-    create_base(mycursor)
-    create_table(mycursor)
-    anime = get_anime_info()
-    fill_base_anime(anime, mycursor, mydb)
     print_base(mycursor)
 
 
