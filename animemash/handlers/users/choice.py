@@ -75,7 +75,7 @@ async def generate_anime(call: CallbackQuery, state: FSMContext):
         if data.get('user_id') == None:
             data = user_info(data, call.from_user.id,
                              call.from_user.first_name)
-        if data['round'] <= 5 and len(data['anime_list']) == 1:
+        if data['round'] <= 3 and len(data['anime_list']) == 1:
             sql = 'SELECT * from animemash WHERE anime_id=%s'
             mycursor.execute(sql, (data['anime_list'][0],))
             myresult = mycursor.fetchall()
@@ -92,7 +92,7 @@ async def generate_anime(call: CallbackQuery, state: FSMContext):
                 if check == True:
                     break
             data['round'] += 1
-        if data['round'] == 6 and data['final'] == False:
+        if data['round'] == 4 and data['final'] == False:
             await call.message.answer(text="Ого, вы смогли дойти до финального раунда")
             await call.message.answer_sticker(r'CAACAgEAAxkBAAEBG09fHrD61foUyndmqNsraV-E7ktO9AACuiIAAnj8xgXAcxWeRGOe3RoE')
             data['anime_list'] = []
@@ -132,11 +132,9 @@ async def choice_anime_one(call: CallbackQuery, callback_data: dict, state: FSMC
             data['anime_list'].remove(int(result_2))
         else:
             data['anime_list'].remove(int(result_1))
-        if data['round'] == 6 and len(data['anime_list']) == 1:
-            sql = 'SELECT * from animemash WHERE anime_id=%s'
-            mycursor.execute(sql, (data['anime_list'][0],))
-            myresult = mycursor.fetchall()
-            winner_name = myresult[0][1]
+
+        if data['round'] == 4 and len(data['anime_list']) == 1:
+            winner_id = data['anime_list'][0]
             rating = ''
             for item in data['winner_list']:
                 sql = 'SELECT * from animemash WHERE anime_id=%s'
@@ -147,6 +145,10 @@ async def choice_anime_one(call: CallbackQuery, callback_data: dict, state: FSMC
             mycursor.execute(sql, (rating, data['user_id']))
             mydb.commit()
             data['old_list'] = rating
+            sql = 'SELECT * from animemash WHERE anime_id=%s'
+            mycursor.execute(sql, (winner_id,))
+            myresult = mycursor.fetchall()
+            winner_name = myresult[0][1]
             await call.message.answer(f"Абсолютный победитель по вашему мнению это:")
             await call.message.answer_photo(myresult[0][3], myresult[0][1] + " !")
             await call.message.answer(f"Чтобы начать игру сначала нажмите /start", reply_markup=refresh)
