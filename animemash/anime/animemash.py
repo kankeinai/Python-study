@@ -33,12 +33,15 @@ def choose_best_anime(anime_one, anime_two, mycursor):
 
 
 def get_Expectation(rate_1, rate_2):
-    calc = (1.0 / (1.0 + pow(10, ((int(rate_2) - int(rate_1)) / 400))))
+    calc = float(
+        1.0 / (1.0 + pow(10, ((float(rate_2) - float(rate_1)) / 400))))
+    print(calc)
     return calc
 
 
 def modifyRating(rating, expected, actual, kfactor):
-    calc = (int(rating) + kfactor * (actual - int(expected)))
+    calc = (float(rating) + kfactor * (float(actual) - float(expected)))
+    print(calc)
     return calc
 
 # Считаем новый рейтинг
