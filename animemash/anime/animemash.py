@@ -1,6 +1,5 @@
 from math import pow
 from random import randint
-import mysql.connector
 
 # db anime, table animemash
 # anime_id, anime_name, anime_rate(default=500), anime_image
@@ -23,10 +22,10 @@ def gener_anime(size, anime_list, winner_list):
 
 
 def choose_best_anime(anime_one, anime_two, mycursor):
-    sql = '''SELECT * FROM animemash WHERE anime_id =%s'''
+    sql = '''SELECT * FROM animemash WHERE anime_id =?'''
     mycursor.execute(sql, (anime_one,))
     result_1 = mycursor.fetchall()
-    sql = '''SELECT * FROM animemash WHERE anime_id =%s'''
+    sql = '''SELECT * FROM animemash WHERE anime_id =?'''
     mycursor.execute(sql, (anime_two,))
     result_2 = mycursor.fetchall()
     return result_1, result_2
@@ -62,9 +61,9 @@ def get_new_rates(winner, result_1, result_2, result_1_rate, result_2_rate):
 
 
 def update_rates(new_rate_A, anime_one, new_rate_B, anime_two, mycursor, mydb):
-    sql = "UPDATE animemash SET anime_rate=%s WHERE anime_id=%s"
+    sql = "UPDATE animemash SET anime_rate=? WHERE anime_id=?"
     mycursor.execute(sql, (new_rate_A, anime_one))
-    sql = "UPDATE animemash SET anime_rate=%s WHERE anime_id=%s"
+    sql = "UPDATE animemash SET anime_rate=? WHERE anime_id=?"
     mycursor.execute(sql, (new_rate_B, anime_two))
     mydb.commit()
 # Выводим топ-10
@@ -77,7 +76,8 @@ def show_rates(mycursor):
     index = 1
     rating = ''
     for x in myresult:
-        rating += (f"{index}. {x[1]}\n")
+        rate = "%.2f" % x[2]
+        rating += (f"{index}. {x[1]} - {rate}\n")
         index += 1
     return rating
 # Обнуляем всем рейтинг
