@@ -7,16 +7,12 @@ from keyboards.inline.choice_buttons import answer_choice, rates, keyboard_param
 from keyboards.inline.callback_data import anime_choice, gen_anime
 from anime.animemash import gener_anime, choose_best_anime, get_new_rates, update_rates, show_rates, random_phrase
 from anime.img_dwl import save_image
-import mysql.connector
 import random
+import sqlite3
 
-mydb = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="mikael-love",
-    database="anime"
-)
+mydb = sqlite3.connect('anime.db')
 mycursor = mydb.cursor()
+
 mycursor.execute("SELECT COUNT(*) FROM animemash")
 myresult = mycursor.fetchall()
 rows = myresult[0][0]
@@ -50,12 +46,12 @@ async def process_start_command(message: types.Message, state: FSMContext):
         data = user_info(data, message.from_user.id, user_name)
         print(f"Зарегистрирован новый пользователь: {data['user_name']}")
         print(data['user_id'])
-        sql = """SELECT * from anime_users WHERE user_id_anime =%s"""
+        sql = f"""SELECT * from anime_users WHERE user_id_anime =? """
         mycursor.execute(sql, (data['user_id'],))
         myresult = mycursor.fetchall()
         print(myresult)
         if len(myresult) == 0:
-            sql = "INSERT INTO anime_users (user_id_anime , user_winner_list) VALUES (%s, %s)"
+            sql = f"INSERT INTO anime_users (user_id_anime , user_winner_list) VALUES (?,?)"
             mycursor.execute(sql, (data['user_id'], 'Пусто'))
             mydb.commit()
             data["old_list"] = 'Пусто'
@@ -75,8 +71,8 @@ async def generate_anime(call: CallbackQuery, state: FSMContext):
         if data.get('user_id') == None:
             data = user_info(data, call.from_user.id,
                              call.from_user.first_name)
-        if data['round'] <= 3 and len(data['anime_list']) == 1:
-            sql = 'SELECT * from animemash WHERE anime_id=%s'
+        if data['round'] <= 7 and len(data['anime_list']) == 1:
+            sql = 'SELECT * from animemash WHERE anime_id=?'
             mycursor.execute(sql, (data['anime_list'][0],))
             myresult = mycursor.fetchall()
             winner_name = myresult[0][1]
@@ -92,7 +88,7 @@ async def generate_anime(call: CallbackQuery, state: FSMContext):
                 if check == True:
                     break
             data['round'] += 1
-        if data['round'] == 4 and data['final'] == False:
+        if data['round'] == 8 and data['final'] == False:
             await call.message.answer(text="Ого, вы смогли дойти до финального раунда")
             await call.message.answer_sticker(r'CAACAgEAAxkBAAEBG09fHrD61foUyndmqNsraV-E7ktO9AACuiIAAnj8xgXAcxWeRGOe3RoE')
             data['anime_list'] = []
@@ -120,7 +116,7 @@ async def choice_anime_one(call: CallbackQuery, callback_data: dict, state: FSMC
     new_rate_A, new_rate_B = get_new_rates(
         winner, result_1, result_2, result_1_rate, result_2_rate)
     update_rates(new_rate_A, result_1, new_rate_B, result_2, mycursor, mydb)
-    sql = 'SELECT * from animemash WHERE anime_id=%s'
+    sql = 'SELECT * from animemash WHERE anime_id=?'
     mycursor.execute(sql, (winner,))
     myresult = mycursor.fetchall()
     winner_name = myresult[0][1]
@@ -133,19 +129,19 @@ async def choice_anime_one(call: CallbackQuery, callback_data: dict, state: FSMC
         else:
             data['anime_list'].remove(int(result_1))
 
-        if data['round'] == 4 and len(data['anime_list']) == 1:
+        if data['round'] == 8 and len(data['anime_list']) == 1:
             winner_id = data['anime_list'][0]
             rating = ''
             for item in data['winner_list']:
-                sql = 'SELECT * from animemash WHERE anime_id=%s'
+                sql = 'SELECT * from animemash WHERE anime_id=?'
                 mycursor.execute(sql, (item,))
                 myresult = mycursor.fetchall()
                 rating += f"— {myresult[0][1]}\n"
-            sql = "UPDATE anime_users SET user_winner_list=%s WHERE user_id_anime =%s"
+            sql = "UPDATE anime_users SET user_winner_list=? WHERE user_id_anime =?"
             mycursor.execute(sql, (rating, data['user_id']))
             mydb.commit()
             data['old_list'] = rating
-            sql = 'SELECT * from animemash WHERE anime_id=%s'
+            sql = 'SELECT * from animemash WHERE anime_id=?'
             mycursor.execute(sql, (winner_id,))
             myresult = mycursor.fetchall()
             winner_name = myresult[0][1]
@@ -168,7 +164,7 @@ async def generate_anime(call: CallbackQuery):
 async def generate_anime(call: CallbackQuery):
     await call.message.answer(text="Правила:")
     await call.message.answer_sticker(r'CAACAgEAAxkBAAEBH21fIyFGq3tVyIZRLcrDyV-h8i2nlgACviIAAnj8xgXlUHBREO72ZBoE')
-    await call.message.answer(text="Этот бот позволяет выбрать лучшее аниме.\nВам даются на выбор 2 аниме, выбирайте то, которое больше всего нравится и так по кругу)\nВам понадобится 5 раундов, чтобы сравнить все аниме, после этого вы выберете абсолютного победителя (для себя).", reply_markup=rules)
+    await call.message.answer(text="Этот бот позволяет выбрать лучшее аниме.\nВам даются на выбор 2 аниме, выбирайте то, которое больше всего нравится и так по кругу)\nВам понадобится 7 раундов, чтобы сравнить все аниме, после этого вы выберете абсолютного победителя (для себя).", reply_markup=rules)
 
 
 @dp.callback_query_handler(gen_anime.filter(action="show_user_rates"))
@@ -184,7 +180,7 @@ async def show_anime_rate(call: CallbackQuery, state: FSMContext):
             index = 0
             rating = ''
             for item in winners:
-                sql = 'SELECT * from animemash WHERE anime_id=%s'
+                sql = 'SELECT * from animemash WHERE anime_id=?'
                 mycursor.execute(sql, (item,))
                 myresult = mycursor.fetchall()
                 rating += f"— {myresult[0][1]}\n"
@@ -201,7 +197,7 @@ async def show_anime_rate(call: CallbackQuery):
 async def show_detailed_rules(call: CallbackQuery):
     await call.message.answer(text="Подробные правила:")
     await call.message.answer_sticker(r'CAACAgEAAxkBAAEBH-lfI7tXKzyJTyO9m15RoGpPTVDM5QACvCIAAnj8xgXC3jksMfFEvxoE')
-    await call.message.answer(text="Это игра на выбывание!\nБудет всего 5 раундов (у нас много аниме на выбор).\nКаждый раунд будет генерироваться список из 10 аниме.\nИз них будут составляться пары. Аниме, которое вы не выбераете выходит из игры.\nПосле каждого раунда сохраняется победитель.\nВ финальном раунде вы будете выбирать между победителями прошлых раундов.\n\nТермины:\nЛичный список - это аниме, которые победили в каждом раунде\nОбщий рейтинг - вычисляется для каждого аниме по ответам пользователей.\nАбсолютный победитель - аниме-победитель всех раундов лично для пользователя.\nУдачной игры!", reply_markup=start_game)
+    await call.message.answer(text="Это игра на выбывание!\nБудет всего 7 раундов (у нас много аниме на выбор).\nКаждый раунд будет генерироваться список из 10 аниме.\nИз них будут составляться пары. Аниме, которое вы не выбераете выходит из игры.\nПосле каждого раунда сохраняется победитель.\nВ финальном раунде вы будете выбирать между победителями прошлых раундов.\n\nТермины:\nЛичный список - это аниме, которые победили в каждом раунде\nОбщий рейтинг - вычисляется для каждого аниме по ответам пользователей.\nАбсолютный победитель - аниме-победитель всех раундов лично для пользователя.\nУдачной игры!", reply_markup=start_game)
 
 
 @dp.callback_query_handler(gen_anime.filter(action="old_list"))
