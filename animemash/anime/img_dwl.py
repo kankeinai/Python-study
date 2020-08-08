@@ -1,15 +1,12 @@
 
 
 from bs4 import BeautifulSoup
-import requests
 import os
 import pandas as pd
 import time
 from urllib.request import Request, urlopen
 import urllib.request
 from urllib.parse import quote
-from PIL import Image
-
 
 def save_image(name, url):
     image_name = name.replace(" ", "_") + ".jpg"
