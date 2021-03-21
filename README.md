@@ -1,2 +1,2 @@
 # python_study
-complete python developer course
+different mini projects
